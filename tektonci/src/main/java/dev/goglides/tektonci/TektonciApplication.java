@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @SpringBootApplication
+@RestController
 public class TektonciApplication {
 
 	private static final String APP_VERSION = "1.0.0";
