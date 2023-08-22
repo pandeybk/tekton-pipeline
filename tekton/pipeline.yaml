@@ -23,7 +23,7 @@ spec:
     - name: IMAGE_REPO
       type: string
       description: Destination image repo
-      default: "spring-apps-cicd/tektonci"
+      default: "tektonci/tektonci" # Make sure it ${NAMESPACE}/tektonci
     - name: IMAGE_TAG
       type: string
       description: Destination image tag
