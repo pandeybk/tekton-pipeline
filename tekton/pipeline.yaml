@@ -1,0 +1,63 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-deploy-spring-app
+spec:
+  params:
+    - name: deployment-name
+      type: string
+      description: Name of the deployment for the Spring application
+    - name: GIT_URL
+      type: string
+      description: Git repository URL of the Spring application
+    - name: GIT_REVISION
+      type: string
+      default: "main"
+      description: Git revision to checkout
+    - name: IMAGE_REGISTRY
+      type: string
+      description: Destination image registry
+    - name: IMAGE_REPO
+      type: string
+      description: Destination image repo
+    - name: IMAGE_TAG
+      type: string
+      description: Destination image tag
+
+  workspaces:
+    - name: shared-workspace
+
+  tasks:
+    - name: fetch-repo
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: "$(params.GIT_URL)"
+        - name: revision
+          value: "$(params.GIT_REVISION)"
+        - name: subdirectory
+          value: "./"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    - name: build-and-push-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+      - name: IMAGE
+        value: "$(params.IMAGE_REGISTRY)/$(params.IMAGE_REPO):$(params.IMAGE_TAG)"
+      - name: DOCKERFILE
+        value: "./Dockerfile"
+      - name: CONTEXT
+        value: "."
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        # - name: dockerconfig
+        #   workspace: docker-config-workspace
+      runAfter:
+      - fetch-repo
