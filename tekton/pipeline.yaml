@@ -1,15 +1,17 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: build-and-deploy-spring-app
+  name: tektonci-app
 spec:
   params:
     - name: deployment-name
       type: string
       description: Name of the deployment for the Spring application
+      default: "tektonci-app"
     - name: GIT_URL
       type: string
       description: Git repository URL of the Spring application
+      default: "https://github.com/pandeybk/tekton-pipeline.git"
     - name: GIT_REVISION
       type: string
       default: "main"
@@ -17,12 +19,15 @@ spec:
     - name: IMAGE_REGISTRY
       type: string
       description: Destination image registry
+      default: "image-registry.openshift-image-registry.svc:5000"
     - name: IMAGE_REPO
       type: string
       description: Destination image repo
+      default: "spring-apps-cicd/tektonci"
     - name: IMAGE_TAG
       type: string
       description: Destination image tag
+      default: "latest"
 
   workspaces:
     - name: shared-workspace
@@ -57,7 +62,5 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
-        # - name: dockerconfig
-        #   workspace: docker-config-workspace
       runAfter:
       - fetch-repo

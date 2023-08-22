@@ -1,4 +1,3 @@
 resources:
-  - "task-build-and-push.yaml"
   - "persistent-volume-claim.yaml"
   - "pipeline.yaml"
